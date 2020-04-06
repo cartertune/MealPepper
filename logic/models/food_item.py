@@ -31,6 +31,7 @@ class NutritionMap(EmbeddedDocument):
     fullDvp = DecimalField()  # full daily value
 
 
+#TODO add indexes
 class FoodItem(Document):
     id = StringField(required=True, primary_key=True)
     name = StringField(required=True)
