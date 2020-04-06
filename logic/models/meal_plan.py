@@ -1,5 +1,9 @@
-from mongoengine import Document, StringField, BooleanField, \
-    EmbeddedDocument, EmbeddedDocumentField, IntField, DecimalField, ListField, ObjectIdField
+from mongoengine import Document, EmbeddedDocument, EmbeddedDocumentField, ListField, ObjectIdField
+
+"""
+    This is designed so that we can store meal plans in MongoDB as well, this may be helpful later, but we probably
+    wont use this except as an idea for how to structure the data 
+"""
 
 
 class DailyPlan(EmbeddedDocument):
