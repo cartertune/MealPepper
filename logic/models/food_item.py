@@ -43,7 +43,7 @@ class FoodItem(Document):
     ingredientList = ListField(StringField())
     brand = StringField()
     price = DecimalField()
-    diets = ListField(StringField())  # Should be one of diets in DIET ENUM
+    diets = ListField(StringField(choices=[d.value for d in Diets]))  # Should be one of diets in DIET ENUM
 
 
 """TODO:
