@@ -40,6 +40,7 @@ for category in CATEGORIES:
         r = requests.get(url = create_url(DEFAULT_STORE, skip, category), verify=False)
         print("Just fetched ", category, " and skipped ", skip)
         data = r.json()
+        #TODO for each item, fetch the full version and add it to the DB
         if not data["hasLoadMore"]:
             print(data)
             finished = True
