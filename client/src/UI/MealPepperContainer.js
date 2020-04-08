@@ -1,26 +1,28 @@
-import React from "react"
+import React from "react";
+import ConstraintForm from "./ConstraintForm";
+import Plan from "./Plan";
 
 class MealPepperContainer extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {}
+        this.state = {
+            plan: ""
+        };
     }
 
-    componentDidMount() {
-        fetch('http://127.0.0.1:5000/')
-            .then(res => res.json())
-            .then((data) => {
-                this.setState({text: data.data})
-            }).catch(console.log)
-      }
+    setPlan = (plan) => {
+        this.setState({plan});
+    }
 
     render() {
-        const { text } = this.state
-        if (text) {
-            return <div>{text}</div>
-        }
-        return <div>Loading...</div>
+        return (
+            <div className="meal-pepper-container">
+                <h1>Meal Pepper</h1>
+                <ConstraintForm setPlan={this.setPlan} />
+                <Plan plan={this.state.plan} />
+            </div>
+        );
     }
-}
+};
 
-export default MealPepperContainer
+export default MealPepperContainer;
