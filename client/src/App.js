@@ -4,7 +4,7 @@ import MealPepperContainer from "./UI/MealPepperContainer"
 
 function App() {
   return (
-    <div className="App">
+    <div className="app">
       <MealPepperContainer />
     </div>
   );
