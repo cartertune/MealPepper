@@ -34,15 +34,21 @@ class ConstraintForm extends React.Component {
     };
 
     render() {
+        const {
+            caloriesMin,
+            caloriesMax,
+            loading
+        } = this.state;
+
         return (
             <div className="constraint-form">
                 <div>calories:</div>
                 <span>min:</span>
-                <input className="constraint-input" type="number" value={this.state.caloriesMin} onChange={this.caloriesMinChange} />
+                <input className="constraint-input" type="number" value={caloriesMin} onChange={this.caloriesMinChange} />
                 <span>min:</span>
-                <input className="constraint-input" type="number" value={this.state.caloriesMax} onChange={this.caloriesMaxChange} />
+                <input className="constraint-input" type="number" value={caloriesMax} onChange={this.caloriesMaxChange} />
                 <div className="generate-plan-button">
-                    <button disabled={this.state.loading} onClick={this.generatePlan}>
+                    <button disabled={loading} onClick={this.generatePlan}>
                         generate plan
                     </button>
                 </div>
