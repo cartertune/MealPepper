@@ -7,7 +7,7 @@ from mongoengine import Document, EmbeddedDocument, EmbeddedDocumentField, ListF
 
 
 class DailyPlan(EmbeddedDocument):
-    plan: ListField(ListField(EmbeddedDocumentField(ObjectIdField)))  # [[FoodItem Id]]
+    food: ListField(ListField(EmbeddedDocumentField(ObjectIdField)))  # [[FoodItem Id]]
 
 
 class MealPlan(Document):
@@ -25,7 +25,7 @@ class MealPlan(Document):
     What Front-End should get:
     
     data: {
-        sunday: [[{id: "asdfa", name: "Avocado", price: "1.99", nutritionalData: (NutritionalMap as Json) }, ...]]
+        sunday: {food: [[{id: "asdfa", name: "Avocado", price: "1.99", nutritionalData: (NutritionalMap as Json) }, ...]]}
         monday: ...
     }
 """

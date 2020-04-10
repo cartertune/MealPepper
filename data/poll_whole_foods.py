@@ -1,10 +1,10 @@
 import requests
 import urllib3
+from logic.db_connection import mongo_connection
 from mongoengine import connect
 
 from logic.models.food_item import FoodItem
 
-connection = connect("meal_planner_db")
 urllib3.disable_warnings()
 
 
@@ -56,6 +56,7 @@ def poll_wf():
                 del p["meta"], p["store"], p["image"], p["diets"]
 
                 food = FoodItem(_id=p["_id"], name=p["name"])
+                food.save()
                 food.update(**p)
                 food.price = price
                 food.diets = diets
@@ -63,13 +64,18 @@ def poll_wf():
 
             # TODO for each item, fetch the full version and add it to the DB
             if not data["hasLoadMore"]:
+                print(FoodItem.objects())
                 finished = True
             skip += 20
 
 
 
 def main():
-    poll_wf()
+    # poll_wf()
+
+    # print(FoodItem.objects()[0:20].to_json())
+
+
     print("Completed!")
 
 main()

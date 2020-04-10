@@ -1,7 +1,9 @@
-from mongoengine import Document, StringField, BooleanField, \
+from mongoengine import connect, Document, StringField, BooleanField, \
     EmbeddedDocument, EmbeddedDocumentField, IntField, DecimalField, ListField, GenericEmbeddedDocumentField
 
 from enum import Enum
+
+connection = connect("meal_planner_db")
 
 
 class Diets(Enum):
@@ -132,11 +134,10 @@ class FoodItem(Document):
         'indexes': ['name', 'diets', 'price', 'allergenList'],
         'strict': False
     }
-
-
 """TODO:
     - Allow for different stores
     - Allow for Foods to be rated (so we can optimize for ratings)
     - Allow including allergens
     - Allow for calculating heuristics based on constraints
 """
+
