@@ -40,6 +40,13 @@ def create_url(store, skip, category):
 def create_product_url(slug, store):
     return f'https://products.wholefoodsmarket.com/api/Product/{slug}?store={store}'
 
+def calculate_price_per_serving(food, price):
+    price = food.price
+    serving_count = food.servingInfo.servingsPerContainer
+    print(serving_count)
+    return price / serving_count
+
+
 def poll_wf():
     for category in CATEGORIES:
         finished = False
@@ -59,23 +66,29 @@ def poll_wf():
                 food.save()
                 food.update(**p)
                 food.price = price
+                serving_count = p["servingInfo"]["servingsPerContainer"]
+                if not serving_count:
+                    #TODO: Figure out what to do about pricing here
+                    serving_count = 99
+
+                food.pricePerServing = price / serving_count
                 food.diets = diets
                 food.save()
 
             # TODO for each item, fetch the full version and add it to the DB
             if not data["hasLoadMore"]:
-                print(FoodItem.objects())
                 finished = True
             skip += 20
 
 
 
 def main():
-    # poll_wf()
-
+    #poll_wf()
     # print(FoodItem.objects()[0:20].to_json())
 
+    #print(FoodItem.objects(diets__all=["keto-friendly", "paleo-friendly"]).count())
+    #print(FoodItem.objects(pricePerServing__exists=True).count())
+    print("Completed")
 
-    print("Completed!")
 
 main()

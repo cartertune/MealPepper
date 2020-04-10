@@ -2,7 +2,6 @@ from logic.db_connection import mongo_connection
 from logic.models.food_item import FoodItem
 import random
 
-
 class MealPlanGenerator:
 
     days_of_week = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"]
@@ -20,6 +19,8 @@ class MealPlanGenerator:
             meal_plan[dow]["food"] = list(map(lambda r: FoodItem.objects()[r].to_json(), random_ints))
         return meal_plan
 
-    def generate(self):
+    def generate(self, constraintFilters):
+
+        # print(FoodItem.objects(diets__all=constraintFilters["filters"].count()))
         meal_plan = self.generate_random_meal_plan()
         return meal_plan

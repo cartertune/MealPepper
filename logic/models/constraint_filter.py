@@ -17,7 +17,7 @@ What Front-end should send:
 body: {
     constraintsFilters: {
         constraints: [{ name: "calories", min_val: 2000, max_val: 2400}, { name: "protein", min: 80 }],
-        filters: ["vegan", "paleo"]
+        filters: ["vegan", "paleo-friendly"]
     }
 }
 """

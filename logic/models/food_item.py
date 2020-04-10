@@ -120,6 +120,7 @@ class FoodItem(Document):
     brand = EmbeddedDocumentField(BrandInfo)
     diets = ListField(StringField())  # Should be one of diets in DIET ENUM
     allergenList = ListField(StringField())
+    pricePerServing = DecimalField()
 
     # Not Used-------
     asin = StringField()
