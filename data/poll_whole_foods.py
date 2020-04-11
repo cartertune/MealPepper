@@ -70,6 +70,7 @@ def poll_wf():
                 if not serving_count:
                     #TODO: Figure out what to do about pricing here
                     serving_count = 99
+                    food.noServingCount = True
 
                 food.pricePerServing = price / serving_count
                 food.diets = diets
@@ -80,14 +81,22 @@ def poll_wf():
                 finished = True
             skip += 20
 
+def update_food_items():
+    for food in FoodItem.objects(nutritionMap__protein__exists=False):
+        print("deleting")
+        food.delete()
+
 
 
 def main():
     #poll_wf()
+    update_food_items()
+    print(FoodItem.objects(nutritionMap__totalFat__exists=False).count())
+    print(FoodItem.objects(nutritionMap__carbohydrates__exists=False).count())
+    print(FoodItem.objects(nutritionMap__protein__exists=False).count())
     # print(FoodItem.objects()[0:20].to_json())
 
     #print(FoodItem.objects(diets__all=["keto-friendly", "paleo-friendly"]).count())
-    #print(FoodItem.objects(pricePerServing__exists=True).count())
     print("Completed")
 
 

@@ -121,6 +121,7 @@ class FoodItem(Document):
     diets = ListField(StringField())  # Should be one of diets in DIET ENUM
     allergenList = ListField(StringField())
     pricePerServing = DecimalField()
+    noServingCount = BooleanField()
 
     # Not Used-------
     asin = StringField()
@@ -132,7 +133,7 @@ class FoodItem(Document):
     certificationList = ListField()
     additiveList = ListField()
     meta = {
-        'indexes': ['name', 'diets', 'price', 'allergenList'],
+        'indexes': ['name', 'diets', 'price', 'allergenList', "pricePerServing", "noServingCount"],
         'strict': False
     }
 """TODO:
