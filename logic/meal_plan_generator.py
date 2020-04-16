@@ -9,13 +9,19 @@ class MealPlanGenerator:
 
     food_items = mongo_connection.get_collection("food_item")
 
-    def get_random_food_items(self, n):
+    def get_random_food_items(self, filters=["paleo-friendly"], n=20):
         random_ints = []
 
         #TODO solve for food items with out serving costs (aka make up serving??)
-        food_objects = FoodItem.objects(noServingCount__ne=True)
+        food_objects = FoodItem.objects(servingInfo__servingsPerContainer__exists=True, diets__all=filters)
+        food_count = food_objects.count()
+
+        # if below some threshold, no need for random
+        if food_count * .67 < n:
+            print(food_count)
+            return food_objects
         for i in range(n):
-            random_ints.append(random.randint(1, food_objects.count() - 1))
+            random_ints.append(random.randint(0, food_objects.count() - 1))
 
         return list(map(lambda r: food_objects[r], random_ints))
 
@@ -26,63 +32,49 @@ class MealPlanGenerator:
             meal_plan[dow]["food"] = list(map(lambda r: r.to_json(), self.get_random_food_items(12)))
         return meal_plan
 
-    def generate_basic_IP_plan(self, constraintFilter, sample_size=20):
-        food_items = self.get_random_food_items(sample_size)
-        food_ids = []
-        food_calories = []
-        food_fat = []
-        food_carbs = []
-        food_protein = []
-        food_prices = []
-
+    def generate_basic_IP_plan(self, constraintFilter, sample_size):
+        """
+            For each constraint:
+            1. Create a table of food id -> that field
+                - For each constraint field, assign a number i
+                - create a dict of id -> array where the ith element is the val for that 
+            2. Add the min & max to the problem
+        """
+        food_items = self.get_random_food_items(constraintFilter["filters"], sample_size)
+        food_map = dict()
         for food in food_items:
-            food_ids.append(food.name)
-            food_prices.append(float(food.pricePerServing))
-            food_calories.append(float(food.nutritionMap.calories.perServing))
-            food_fat.append(float(food.nutritionMap.totalFat.perServing))
-            food_carbs.append(float(food.nutritionMap.carbohydrates.perServing))
-            food_protein.append(float(food.nutritionMap.protein.perServing))
-
-
+            if not food.id in food_map.keys():
+                food_map[food.id] = []
+                food_map[food.id].append(float(food.pricePerServing))
 
         prob = LpProblem("Simple Diet Problem", LpMinimize)
+        food_vars = LpVariable.dicts("Food", food_map.keys(), lowBound=0, cat='Integer')
+        prob += lpSum([food_map[i][0] * food_vars[i] for i in food_map.keys()])
 
-        prices = dict(zip(food_ids, food_prices ))
+        constraints = constraintFilter["constraints"]
 
-        # Create a dictionary of calories for all food items
-        calories = dict(zip(food_ids, food_calories))
+        for i in range(len(constraints)):
+            c = constraints[i]
 
-        # Create a dictionary of total fat for all food items
-        fat = dict(zip(food_ids, food_fat))
+            # build food map
+            for food in food_items:
 
-        # Create a dictionary of carbohydrates for all food items
-        carbs = dict(zip(food_ids, food_carbs))
+                if len(food_map[food.id]) <= i + 1:
+                    food_map[food.id].append(food.to_mongo().to_dict()["nutritionMap"][c["name"]]["perServing"])
 
-        protein = dict(zip(food_ids, food_protein))
-
-        food_vars = LpVariable.dicts("Food", food_ids, lowBound=0, cat='Integer')
-        prob += lpSum([prices[i] * food_vars[i] for i in food_ids])
-
-        prob += lpSum([calories[f] * food_vars[f] for f in food_ids]) >= 2000.0
-        prob += lpSum([calories[f] * food_vars[f] for f in food_ids]) <= 2500.0
-
-        prob += lpSum([fat[f] * food_vars[f] for f in food_ids]) >= 20.0, "FatMinimum"
-        prob += lpSum([fat[f] * food_vars[f] for f in food_ids]) <= 50.0, "FatMaximum"
-
-        # Carbs
-        prob += lpSum([carbs[f] * food_vars[f] for f in food_ids]) >= 130.0, "CarbsMinimum"
-        prob += lpSum([carbs[f] * food_vars[f] for f in food_ids]) <= 200.0, "CarbsMaximum"
-
-
-        # Protein
-        prob += lpSum([protein[f] * food_vars[f] for f in food_ids]) >= 120.0, "ProteinMinimum"
-        prob += lpSum([protein[f] * food_vars[f] for f in food_ids]) <= 150.0, "ProteinMaximum"
+            if "min_val" in c:
+                prob += lpSum(food_map[f][i + 1] * food_vars[f] for f in food_map.keys()) >= c["min_val"], "min_" + c["name"]
+            if "max_val" in c:
+                prob += lpSum(food_map[f][i + 1] * food_vars[f] for f in food_map.keys()) <= c["max_val"], "max_" + c["name"]
 
         prob.solve()
         print("Status:", LpStatus[prob.status])
         for v in prob.variables():
             if v.varValue > 0:
                 print(v.name, "=", v.varValue)
+                id = v.name[5:]
+                f = FoodItem.objects(_id=id)
+                print(f[0].to_json())
         obj = value(prob.objective)
         print("The total cost of this balanced diet is: ${}".format(round(obj, 2)))
 
@@ -91,11 +83,8 @@ class MealPlanGenerator:
 
 
 
-    def generate(self, constraintFilters={}):
+    def generate(self, constraintFilters):
+        print(constraintFilters)
 
-        # print(FoodItem.objects(diets__all=constraintFilters["filters"].count()))
-        #meal_plan = self.generate_random_meal_plan()
-        meal_plan = self.generate_basic_IP_plan(constraintFilters, 1400)
+        meal_plan = self.generate_basic_IP_plan(constraintFilters, 500)
         #return meal_plan
-
-MealPlanGenerator().generate()

@@ -90,11 +90,27 @@ def update_food_items():
 
 def main():
     #poll_wf()
-    update_food_items()
-    print(FoodItem.objects(nutritionMap__totalFat__exists=False).count())
-    print(FoodItem.objects(nutritionMap__carbohydrates__exists=False).count())
-    print(FoodItem.objects(nutritionMap__protein__exists=False).count())
+    #update_food_items()
     # print(FoodItem.objects()[0:20].to_json())
+    """
+    TODO:
+    check if either Uom is == g, oz, or gram
+                if there what the totalSizeUom or secondaryTotalSizeUom matches the found Uom
+                find ratio of servings per total and calculate costs perServing
+    """
+    for f in FoodItem.objects(noServingCount=True):
+        Uom = f.servingInfo.servingSizeUom
+        Uom2 = f.servingInfo.secondaryServingSizeUom
+        if f.servingInfo.totalSize == 1:
+            print(f.name)
+            print(f.servingInfo.to_json())
+            print(f.price)
+
+        # if not (Uom == "g" or Uom == "oz" or Uom2 == "g" or Uom2 == "oz"):
+        #     print(f.name)
+        #     print(Uom)
+        #     print(Uom2)
+        #     print("-----")
 
     #print(FoodItem.objects(diets__all=["keto-friendly", "paleo-friendly"]).count())
     print("Completed")

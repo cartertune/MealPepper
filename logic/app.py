@@ -1,5 +1,6 @@
 from flask import Flask, jsonify
 from flask_cors import CORS
+import json
 from mongoengine import connect
 connect("meal_planner_db")
 
@@ -12,8 +13,8 @@ planner = MealPlanGenerator()
 
 
 @app.route("/")
-def main():
-    data = jsonify({"data": planner.generate()})
+def main(input_data):
+    data = jsonify({"data": planner.generate(json.loads(input_data))})
     return data
 
 
