@@ -1,5 +1,5 @@
 from mongoengine import connect, Document, StringField, BooleanField, \
-    EmbeddedDocument, EmbeddedDocumentField, IntField, DecimalField, ListField, GenericEmbeddedDocumentField
+    EmbeddedDocument, EmbeddedDocumentField, IntField, FloatField, FloatField, ListField, GenericEmbeddedDocumentField
 
 from enum import Enum
 
@@ -20,14 +20,14 @@ class Diets(Enum):
 class ServingInfo(EmbeddedDocument):
     servingSizeUom = StringField()  # unit of measure
     totalSize = IntField()  # total size of item
-    servingSize = DecimalField()  # size of single serving
+    servingSize = FloatField()  # size of single serving
 
     totalSizeUom = StringField()
-    secondaryServingSize = DecimalField()
-    secondaryTotalSize = DecimalField()
+    secondaryServingSize = FloatField()
+    secondaryTotalSize = FloatField()
     servingsPerContainerDisplay = StringField()
     secondaryTotalSizeUom = StringField()
-    servingsPerContainer = DecimalField()
+    servingsPerContainer = FloatField()
     secondaryServingSizeUom = StringField()
     servingSizeDisplay = StringField()
     meta = {
@@ -39,10 +39,10 @@ class NutritionData(EmbeddedDocument):
     isDense = BooleanField()  # probably won't this, may be helpful in a heuristic
     key = StringField()
     name = StringField()
-    defaultDvp = DecimalField()  # percent of daily value
-    perServing = DecimalField()
+    defaultDvp = FloatField()  # percent of daily value
+    perServing = FloatField()
     uom = StringField()  # unit of measure
-    fullDvp = DecimalField()  # full daily value
+    fullDvp = FloatField()  # full daily value
     perServingDisplay = StringField()
     defaultDvpDisplay = StringField()
     meta = {
@@ -105,6 +105,24 @@ class BrandInfo(EmbeddedDocument):
         "strict": False
     }
 
+class StoreInfo(EmbeddedDocument):
+    available = BooleanField()
+    basePrice = FloatField()
+    local = BooleanField()
+    price = FloatField()
+    retail_unit = StringField()
+
+    # dont use
+    priceDisplay = StringField()
+    retail_size = StringField()
+    sign_caption = StringField()
+    unit = StringField()
+    uom_name = StringField()
+    meta = {
+        "strict": False
+    }
+
+
 #TODO add indexes
 class FoodItem(Document):
     _id = StringField(required=True, primary_key=True)
@@ -116,12 +134,13 @@ class FoodItem(Document):
     nutritionMap = EmbeddedDocumentField(NutritionMap)
     categories = ListField(StringField())
     ingredientList = ListField(StringField())
-    price = DecimalField()
+    price = FloatField()
     brand = EmbeddedDocumentField(BrandInfo)
     diets = ListField(StringField())  # Should be one of diets in DIET ENUM
     allergenList = ListField(StringField())
-    pricePerServing = DecimalField()
+    pricePerServing = FloatField()
     noServingCount = BooleanField()
+    store = EmbeddedDocumentField(StoreInfo)
 
     # Not Used-------
     asin = StringField()
@@ -133,7 +152,7 @@ class FoodItem(Document):
     certificationList = ListField()
     additiveList = ListField()
     meta = {
-        'indexes': ['name', 'diets', 'price', 'allergenList', "pricePerServing", "noServingCount"],
+        'indexes': ['name', 'diets', 'slug', 'price', 'allergenList', "pricePerServing", "noServingCount"],
         'strict': False
     }
 """TODO:
