@@ -90,4 +90,6 @@ def calculate_price_per_serving(food, debug=False):
 
 bad_data_list = ["farm-raised-littleneck-clams-f3faa7",
                  "365-everyday-value-organic-boneless-skinless-chicken-breast-7298db",
-                 "marys-chicken-whole-heirloom-chicken-6ee8ea"]
+                 "marys-chicken-whole-heirloom-chicken-6ee8ea",
+                 "365-everyday-value-whole-chicken-6a03a1",
+                 "little-neck-clams-dc7420"]

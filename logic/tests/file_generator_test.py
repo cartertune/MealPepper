@@ -5,14 +5,14 @@ constraintFilters1 = {
     "filters": ["paleo-friendly"],
     "constraints": [{
         "name": "calories",
-        "min_val": 2400,
-        "max_val": 2500
+        "min_val": 3000,
+        "max_val": 3100
     }, {
         "name": "protein",
-        "min_val": 160
+        "min_val": 200
     }, {
         "name": "carbohydrates",
-        "max_val": 30
+        "max_val": 80
     }, {
         "name": "vitaminD",
         "min_val": 20
