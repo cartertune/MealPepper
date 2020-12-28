@@ -24,7 +24,7 @@ class MealPlanGenerator:
 
         food_count = food_objects.count()
         # if below some threshold, no need for random
-        if food_count * .067 < n:
+        if food_count * .67 < n:
             print(food_count)
             return food_objects
         for i in range(n):
@@ -100,10 +100,11 @@ class MealPlanGenerator:
                     food_map[food.id].append(food_val)
 
             if "min_val" in c:
-                prob += lpSum(food_map[f][i + 1] * food_vars[f] for f in food_map.keys()) >= c["min_val"], "min_" + c["name"]
+                prob += lpSum(food_map[f][i + 1] * food_vars[f] * 3 for f in food_map.keys()) >= c["min_val"], "min_" + c["name"]
             if "max_val" in c:
-                prob += lpSum(food_map[f][i + 1] * food_vars[f] for f in food_map.keys()) <= c["max_val"], "max_" + c["name"]
+                prob += lpSum(food_map[f][i + 1] * food_vars[f] * 3 for f in food_map.keys()) <= c["max_val"], "max_" + c["name"]
 
+        print(food_map)
         print("setup complete")
         prob.solve()
 
@@ -116,4 +117,4 @@ class MealPlanGenerator:
 
 
     def generate(self, constraintFilters):
-        return self.generate_basic_IP_plan(constraintFilters, 1500)
+        return self.generate_basic_IP_plan(constraintFilters, 4000)

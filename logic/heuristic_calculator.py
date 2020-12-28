@@ -13,21 +13,19 @@ class FoodsByHeuristic:
 
     # ((SUM of Min Constraint Percentage met) - (SUM of Max Constraint Percentage met)) / pricePerServing
     def calculate_heuristic(self, food):
-        min_perc_points = 0
-
+        perc_points = 0
         for c in self.constraints:
-
-             name = c["name"]
+             name = c["name"]  # the nutrient constrained by constraint
              nutrient = food.nutritionMap.__getitem__(name)
 
+             # value per serving for given food and nutrient
              food_val = nutrient.perServing if not nutrient == None else 0
-
              if "min_val" in c:
-                min_perc_points += (food_val / c["min_val"])
+                perc_points += (food_val / c["min_val"])
+             if "max_val" in c:
+                perc_points -= (food_val / c["max_val"])
 
-
-        val = min_perc_points / food.pricePerServing
-        return val
+        return perc_points / food.pricePerServing
 
 
 
