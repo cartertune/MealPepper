@@ -20,6 +20,9 @@ An explanation of Linear / Integer Programming
 
 ### Figure 1
 
+![alt text](https://i.stack.imgur.com/HACvN.png)
+
+
 Figure 1 is a visual representation of linear-programming. It is a 2D representation of a problem because there are only two variables it is optimizing for. In our algorithm, we are using 1000 variables, but because displaying a 1000D graph is not feasible, this one will do (just keep this in mind).
 
 There are 3 important aspects of this algorithm.
